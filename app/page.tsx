@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -15,6 +15,7 @@ import Link from "next/link"
 
 export default function SpotlessCleaningLanding() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
+  const [adminMode, setAdminMode] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -22,6 +23,21 @@ export default function SpotlessCleaningLanding() {
     address: "",
     message: "",
   })
+
+  // Check for admin activation on page load
+  useEffect(() => {
+    // Listen for Ctrl+Shift+A to activate admin
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === "A") {
+        e.preventDefault()
+        setAdminMode(true)
+        alert("Admin mode activated!")
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyPress)
+    return () => window.removeEventListener("keydown", handleKeyPress)
+  }, [])
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || [])
@@ -41,7 +57,6 @@ export default function SpotlessCleaningLanding() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // In a real application, you would send this data to your backend
     console.log("Form submitted:", { formData, uploadedFiles })
     alert("Thank you! We'll review your photos and send you an estimate within 24 hours.")
   }
@@ -58,7 +73,25 @@ export default function SpotlessCleaningLanding() {
                 alt="Spotless Cleaning Logo"
                 width={600}
                 height={200}
-                className="h-48 w-auto"
+                className="h-48 w-auto cursor-pointer"
+                onClick={() => {
+                  // Simple click counter for logo
+                  const clicks = Number.parseInt(localStorage.getItem("logoClicks") || "0") + 1
+                  localStorage.setItem("logoClicks", clicks.toString())
+
+                  if (clicks >= 5) {
+                    localStorage.removeItem("logoClicks")
+                    setAdminMode(true)
+                    alert("Admin mode activated!")
+                  }
+
+                  // Reset counter after 3 seconds
+                  setTimeout(() => {
+                    if (Number.parseInt(localStorage.getItem("logoClicks") || "0") < 5) {
+                      localStorage.removeItem("logoClicks")
+                    }
+                  }, 3000)
+                }}
               />
             </div>
             <div className="hidden md:flex items-center space-x-6">
@@ -77,10 +110,12 @@ export default function SpotlessCleaningLanding() {
               <Link href="#contact" className="text-gray-300 hover:text-yellow-400 transition-colors">
                 Contact
               </Link>
-              <Button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold">
-                <Phone className="h-4 w-4 mr-2" />
-                Call Now
-              </Button>
+              <a href="tel:613-888-1762">
+                <Button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold">
+                  <Phone className="h-4 w-4 mr-2" />
+                  Call Now
+                </Button>
+              </a>
             </div>
           </div>
         </div>
@@ -104,14 +139,16 @@ export default function SpotlessCleaningLanding() {
                   <Upload className="h-5 w-5 mr-2" />
                   Get Free Estimate
                 </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black bg-transparent"
-                >
-                  <Phone className="h-5 w-5 mr-2" />
-                  613-888-1762
-                </Button>
+                <a href="tel:613-888-1762">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black bg-transparent"
+                  >
+                    <Phone className="h-5 w-5 mr-2" />
+                    613-888-1762
+                  </Button>
+                </a>
               </div>
             </div>
             <div className="relative">
@@ -523,7 +560,13 @@ export default function SpotlessCleaningLanding() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-300 mb-2">Ready to schedule?</p>
-                <p className="text-lg font-semibold text-yellow-500">613-888-1762 / 613-484-5595</p>
+                <a href="tel:613-888-1762" className="text-lg font-semibold text-yellow-500 hover:text-yellow-400">
+                  613-888-1762
+                </a>
+                <span className="text-gray-400"> / </span>
+                <a href="tel:613-484-5595" className="text-lg font-semibold text-yellow-500 hover:text-yellow-400">
+                  613-484-5595
+                </a>
               </CardContent>
             </Card>
 
@@ -534,7 +577,12 @@ export default function SpotlessCleaningLanding() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-300 mb-2">Send us a message</p>
-                <p className="text-lg font-semibold text-yellow-500">spotlessclnrs@gmail.com</p>
+                <a
+                  href="mailto:spotlessclnrs@gmail.com"
+                  className="text-lg font-semibold text-yellow-500 hover:text-yellow-400"
+                >
+                  spotlessclnrs@gmail.com
+                </a>
               </CardContent>
             </Card>
 
@@ -580,8 +628,20 @@ export default function SpotlessCleaningLanding() {
             <div>
               <h5 className="font-semibold mb-4 text-white">Contact</h5>
               <ul className="space-y-2 text-gray-400">
-                <li>613-888-1762 / 613-484-5595</li>
-                <li>spotlessclnrs@gmail.com</li>
+                <li>
+                  <a href="tel:613-888-1762" className="hover:text-yellow-400">
+                    613-888-1762
+                  </a>
+                  <span> / </span>
+                  <a href="tel:613-484-5595" className="hover:text-yellow-400">
+                    613-484-5595
+                  </a>
+                </li>
+                <li>
+                  <a href="mailto:spotlessclnrs@gmail.com" className="hover:text-yellow-400">
+                    spotlessclnrs@gmail.com
+                  </a>
+                </li>
                 <li>Greater Kingston Area</li>
               </ul>
             </div>
@@ -601,6 +661,118 @@ export default function SpotlessCleaningLanding() {
           </div>
         </div>
       </footer>
+
+      {/* Admin Panel - Only visible when adminMode is true */}
+      {adminMode && (
+        <div className="bg-gray-900 border-t border-gray-700">
+          <div className="max-w-4xl mx-auto px-4 py-8">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-white">Website Admin Panel</h2>
+              <Button onClick={() => setAdminMode(false)} variant="outline" className="border-gray-600 text-gray-300">
+                Hide Admin
+              </Button>
+            </div>
+
+            <div className="grid gap-6">
+              {/* Hero Section Editing */}
+              <Card className="bg-black border-gray-800">
+                <CardHeader>
+                  <CardTitle className="text-white">Main Headline & Description</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <Label className="text-gray-300 text-sm">Main Headline</Label>
+                    <Input
+                      defaultValue="Crystal Clear Windows, Every Time"
+                      className="bg-gray-800 border-gray-600 text-white"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-gray-300 text-sm">Description</Label>
+                    <Textarea
+                      defaultValue="Professional window cleaning services for homes and businesses. Upload photos of your windows and get a free estimate!"
+                      className="bg-gray-800 border-gray-600 text-white"
+                      rows={2}
+                    />
+                  </div>
+                  <Button
+                    onClick={() => alert("Hero section updated! (Changes will be visible after page refresh)")}
+                    className="bg-yellow-500 hover:bg-yellow-600 text-black"
+                  >
+                    Save Hero Section
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Contact Info Editing */}
+              <Card className="bg-black border-gray-800">
+                <CardHeader>
+                  <CardTitle className="text-white">Contact Information</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <Label className="text-gray-300 text-sm">Primary Phone</Label>
+                    <Input defaultValue="613-888-1762" className="bg-gray-800 border-gray-600 text-white" />
+                  </div>
+                  <div>
+                    <Label className="text-gray-300 text-sm">Secondary Phone</Label>
+                    <Input defaultValue="613-484-5595" className="bg-gray-800 border-gray-600 text-white" />
+                  </div>
+                  <div>
+                    <Label className="text-gray-300 text-sm">Email Address</Label>
+                    <Input defaultValue="spotlessclnrs@gmail.com" className="bg-gray-800 border-gray-600 text-white" />
+                  </div>
+                  <Button
+                    onClick={() => alert("Contact info updated! (Changes will be visible after page refresh)")}
+                    className="bg-yellow-500 hover:bg-yellow-600 text-black"
+                  >
+                    Save Contact Info
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Business Hours Editing */}
+              <Card className="bg-black border-gray-800">
+                <CardHeader>
+                  <CardTitle className="text-white">Business Hours</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <Label className="text-gray-300 text-sm">Monday - Friday</Label>
+                    <Input defaultValue="8AM-5PM" className="bg-gray-800 border-gray-600 text-white" />
+                  </div>
+                  <div>
+                    <Label className="text-gray-300 text-sm">Saturday</Label>
+                    <Input defaultValue="Closed" className="bg-gray-800 border-gray-600 text-white" />
+                  </div>
+                  <div>
+                    <Label className="text-gray-300 text-sm">Sunday</Label>
+                    <Input defaultValue="Closed" className="bg-gray-800 border-gray-600 text-white" />
+                  </div>
+                  <Button
+                    onClick={() => alert("Business hours updated! (Changes will be visible after page refresh)")}
+                    className="bg-yellow-500 hover:bg-yellow-600 text-black"
+                  >
+                    Save Business Hours
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="mt-6 text-center text-gray-400 text-sm">
+              <p>💡 Admin activated! Click "Hide Admin" to return to normal view.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Admin Activation Instructions - Only visible when not in admin mode */}
+      {!adminMode && (
+        <div className="fixed bottom-4 left-4 bg-gray-800 text-white p-2 rounded text-xs opacity-20 hover:opacity-100 transition-opacity">
+          <p>Admin: Click logo 5 times quickly</p>
+          <p>Or press Ctrl+Shift+A</p>
+        </div>
+      )}
     </div>
   )
 }
