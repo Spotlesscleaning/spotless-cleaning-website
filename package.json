@@ -9,6 +9,8 @@
     "start": "next start"
   },
   "dependencies": {
+    "@radix-ui/react-label": "^2.0.2",
+    "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tabs": "^1.0.4",
     "@supabase/supabase-js": "latest",
     "bcryptjs": "latest",
@@ -27,6 +29,8 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.4.16",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "14.0.0",
     "postcss": "^8.5",
     "tailwindcss": "^3.3.5",
     "typescript": "^5"
